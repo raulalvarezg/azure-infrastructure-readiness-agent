@@ -309,6 +309,19 @@ class OpenNetworkSecurityGroupRuleTests(unittest.TestCase):
         self.assertEqual(rule.evaluate(deployment), [])
 
 
+    def test_malformed_nsg_and_rule_entries_are_skipped_safely(self):
+        rule = OpenNetworkSecurityGroupRule()
+        deployment = {
+            "networking": {
+                "network_security_groups": [
+                    "not-a-mapping",
+                    {"name": "nsg1", "rules": ["also-not-a-mapping", None]},
+                ]
+            }
+        }
+        self.assertEqual(rule.evaluate(deployment), [])
+
+
 class DefaultAzureRuleSetTests(unittest.TestCase):
     def test_risky_config_produces_expected_rule_hits(self):
         from tests.helpers import read_sample

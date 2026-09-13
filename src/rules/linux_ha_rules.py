@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any, Dict, List
 
 from src.models import Issue, Severity
-from src.rules.base import Rule, get_in
+from src.rules.base import Rule
 
 SUPPORTED_HA_DISTROS = {
     "sles",

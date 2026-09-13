@@ -140,6 +140,7 @@ exploration and by the automated test suite:
 | File | Purpose |
 | --- | --- |
 | `valid_sap_ha_deployment.yaml` | A fully compliant production SAP HANA HA deployment (expected: `READY`). |
+| `warnings_only_deployment.yaml` | A deployment with only a medium-severity finding (expected: `READY WITH WARNINGS`). |
 | `invalid_syntax.yaml` | Deliberately malformed YAML to exercise syntax validation. |
 | `risky_azure_config.yaml` | Missing VM size, open SSH/RDP to the internet, unmanaged disks, invalid region, no vnet. |
 | `risky_linux_ha_deployment.yaml` | Pacemaker cluster missing fencing, even node count without a quorum device, unsupported distro. |

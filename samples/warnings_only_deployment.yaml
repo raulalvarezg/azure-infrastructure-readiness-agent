@@ -1,0 +1,20 @@
+# A production deployment that only triggers warning-level (medium)
+# findings and no critical/high issues, used to exercise the
+# READY_WITH_WARNINGS status/exit-code path end-to-end.
+
+metadata:
+  name: warnings-only-app
+  environment: production
+  region: mars-central
+
+networking:
+  vnet: vnet-warnings-only
+
+resources:
+  - type: Microsoft.Compute/virtualMachines
+    name: web-vm-01
+    properties:
+      size: Standard_D4s_v5
+      os_type: Linux
+      availability_zone: 1
+      managed_disk_type: Premium_LRS

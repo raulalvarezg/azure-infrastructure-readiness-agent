@@ -274,8 +274,12 @@ class OpenNetworkSecurityGroupRule(Rule):
         nsgs = get_in(deployment, "networking", "network_security_groups", default=[]) or []
 
         for nsg_index, nsg in enumerate(nsgs):
+            if not isinstance(nsg, dict):
+                continue
             nsg_name = nsg.get("name", f"nsg[{nsg_index}]")
             for rule_index, rule in enumerate(nsg.get("rules") or []):
+                if not isinstance(rule, dict):
+                    continue
                 if self._is_open_to_internet(rule):
                     port = rule.get("destination_port_range")
                     issues.append(

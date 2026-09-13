@@ -6,7 +6,7 @@ import re
 from typing import Any, Dict, List
 
 from src.models import Issue, Severity
-from src.rules.base import Rule, get_in
+from src.rules.base import Rule
 
 # VM families certified/recommended for SAP HANA memory-intensive workloads.
 # The entire 'Standard_M' family (M-series) is memory-optimized and built
