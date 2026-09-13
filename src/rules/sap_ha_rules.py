@@ -14,7 +14,7 @@ from src.rules.base import Rule, get_in
 # HANA-certified E-series SKUs; general-purpose 'Standard_E*' sizes without
 # the premium-storage ('s') and version suffix are excluded.
 SAP_HANA_VM_PREFIX = "standard_m"
-SAP_HANA_VM_ESERIES_PATTERN = re.compile(r"^standard_e\d+-?\d*s_v\d+$")
+SAP_HANA_VM_ESERIES_PATTERN = re.compile(r"^standard_e\d+(-\d+)?s_v\d+$")
 
 VALID_SHARED_STORAGE_TYPES = {"anf", "azure_netapp_files", "azure_files", "nfs"}
 
@@ -160,8 +160,9 @@ class SapVmSizingRule(Rule):
                             "SAP-certified series."
                         ),
                         recommendation=(
-                            "Use a memory-optimized, SAP-certified VM size such as an "
-                            "'Standard_M' or 'Standard_E' series instance."
+                            "Use a memory-optimized, SAP-certified VM size such as a "
+                            "'Standard_M' series instance, or a certified 'Standard_E<size>s_v<version>' "
+                            "(premium-storage, versioned) E-series instance."
                         ),
                         path=f"resources[{index}].properties.size",
                     )

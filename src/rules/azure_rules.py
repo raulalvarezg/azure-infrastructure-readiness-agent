@@ -44,6 +44,7 @@ KNOWN_AZURE_REGIONS = {
 }
 
 SENSITIVE_PORTS = {"22", "3389"}
+SENSITIVE_PORTS_INT = {int(port) for port in SENSITIVE_PORTS}
 COMPUTE_RESOURCE_TYPE = "microsoft.compute/virtualmachines"
 INTERNET_SOURCE_PREFIXES = {"*", "0.0.0.0/0", "internet", "any"}
 
@@ -324,7 +325,7 @@ def _port_range_includes_sensitive_port(port_range: str) -> bool:
             start, end = int(start_str), int(end_str)
         except ValueError:
             return False
-        return any(start <= int(sensitive_port) <= end for sensitive_port in SENSITIVE_PORTS)
+        return any(start <= sensitive_port <= end for sensitive_port in SENSITIVE_PORTS_INT)
 
     return port_range in SENSITIVE_PORTS
 
