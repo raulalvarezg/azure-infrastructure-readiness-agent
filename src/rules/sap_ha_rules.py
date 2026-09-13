@@ -2,15 +2,27 @@
 
 from __future__ import annotations
 
+import re
 from typing import Any, Dict, List
 
 from src.models import Issue, Severity
 from src.rules.base import Rule, get_in
 
 # VM families certified/recommended for SAP HANA memory-intensive workloads.
-SAP_HANA_VM_FAMILIES = ("standard_m", "standard_e")
+# 'standard_m' (M-series) is always memory-optimized and HANA certified.
+# 'standard_e..s_v' (Esv3+ storage-optimized variants) covers the smaller,
+# HANA-certified E-series SKUs; general-purpose 'Standard_E*' sizes without
+# the premium-storage ('s') and version suffix are excluded.
+SAP_HANA_VM_PREFIX = "standard_m"
+SAP_HANA_VM_ESERIES_PATTERN = re.compile(r"^standard_e\d+-?\d*s_v\d+$")
 
 VALID_SHARED_STORAGE_TYPES = {"anf", "azure_netapp_files", "azure_files", "nfs"}
+
+
+def _is_sap_hana_certified_size(size: str) -> bool:
+    """Return True if ``size`` looks like a SAP HANA-certified memory-optimized VM size."""
+
+    return size.startswith(SAP_HANA_VM_PREFIX) or bool(SAP_HANA_VM_ESERIES_PATTERN.match(size))
 
 
 class SapHanaHAFencingRule(Rule):
@@ -136,7 +148,7 @@ class SapVmSizingRule(Rule):
 
             properties = resource.get("properties") or {}
             size = str(properties.get("size", "")).strip().lower()
-            if size and not size.startswith(SAP_HANA_VM_FAMILIES):
+            if size and not _is_sap_hana_certified_size(size):
                 issues.append(
                     Issue(
                         rule_id=self.rule_id,

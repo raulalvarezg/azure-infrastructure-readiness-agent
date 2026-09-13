@@ -313,8 +313,10 @@ def _port_range_includes_sensitive_port(port_range: str) -> bool:
     """Return True if ``port_range`` (a single port, range, or '*') covers a sensitive port."""
 
     port_range = port_range.strip()
-    if port_range in ("*", ""):
-        return bool(port_range)
+    if port_range == "*":
+        return True
+    if not port_range:
+        return False
 
     if "-" in port_range:
         start_str, _, end_str = port_range.partition("-")

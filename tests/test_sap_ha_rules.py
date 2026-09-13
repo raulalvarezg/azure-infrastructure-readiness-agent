@@ -115,6 +115,35 @@ class SapVmSizingRuleTests(unittest.TestCase):
         }
         self.assertEqual(rule.evaluate(deployment), [])
 
+    def test_certified_eseries_hana_vm_not_flagged(self):
+        rule = SapVmSizingRule()
+        deployment = {
+            "sap": {"enabled": True},
+            "resources": [
+                {
+                    "name": "hana01",
+                    "sap_role": "hana",
+                    "properties": {"size": "Standard_E20s_v4"},
+                }
+            ],
+        }
+        self.assertEqual(rule.evaluate(deployment), [])
+
+    def test_general_purpose_eseries_hana_vm_flagged(self):
+        rule = SapVmSizingRule()
+        deployment = {
+            "sap": {"enabled": True},
+            "resources": [
+                {
+                    "name": "hana01",
+                    "sap_role": "hana",
+                    "properties": {"size": "Standard_E20_v4"},
+                }
+            ],
+        }
+        issues = rule.evaluate(deployment)
+        self.assertEqual(len(issues), 1)
+
 
 class SapHanaBackupRuleTests(unittest.TestCase):
     def test_missing_backup_flagged_low(self):
