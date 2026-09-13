@@ -32,6 +32,14 @@ class CliTests(unittest.TestCase):
             exit_code = main([sample_path("does_not_exist.yaml")])
         self.assertEqual(exit_code, 2)
 
+    def test_generic_os_error_returns_exit_code_two(self):
+        with patch("sys.stderr", new_callable=StringIO) as err, patch(
+            "builtins.open", side_effect=PermissionError("permission denied")
+        ):
+            exit_code = main([sample_path("valid_sap_ha_deployment.yaml")])
+        self.assertEqual(exit_code, 2)
+        self.assertIn("permission denied", err.getvalue())
+
     def test_strict_mode_fails_on_warnings(self):
         with patch("sys.stdout", new_callable=StringIO):
             exit_code = main([sample_path("risky_linux_ha_deployment.yaml"), "--strict"])

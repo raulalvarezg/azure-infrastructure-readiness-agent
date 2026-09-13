@@ -9,10 +9,12 @@ from src.models import Issue, Severity
 from src.rules.base import Rule, get_in
 
 # VM families certified/recommended for SAP HANA memory-intensive workloads.
-# 'standard_m' (M-series) is always memory-optimized and HANA certified.
-# 'standard_e..s_v' (Esv3+ storage-optimized variants) covers the smaller,
-# HANA-certified E-series SKUs; general-purpose 'Standard_E*' sizes without
-# the premium-storage ('s') and version suffix are excluded.
+# The entire 'Standard_M' family (M-series) is memory-optimized and built
+# specifically for SAP HANA, so a prefix match is sufficient and there is no
+# other Azure VM family sharing the 'standard_m' prefix. 'Standard_E' is a
+# general-purpose family where only the storage-optimized, versioned
+# variants (e.g. 'Standard_E20s_v4') are HANA-certified, so those require
+# the more precise regex below.
 SAP_HANA_VM_PREFIX = "standard_m"
 SAP_HANA_VM_ESERIES_PATTERN = re.compile(r"^standard_e\d+(-\d+)?s_v\d+$")
 

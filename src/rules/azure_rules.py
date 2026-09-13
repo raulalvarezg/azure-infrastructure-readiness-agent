@@ -46,6 +46,11 @@ KNOWN_AZURE_REGIONS = {
 SENSITIVE_PORTS = {"22", "3389"}
 SENSITIVE_PORTS_INT = {int(port) for port in SENSITIVE_PORTS}
 COMPUTE_RESOURCE_TYPE = "microsoft.compute/virtualmachines"
+# Values commonly used in Azure NSG rules (and other cloud providers) to
+# represent "anywhere on the internet". Comparison is case-insensitive (the
+# rule lowercases 'source_address_prefix' before checking), so this covers
+# the Azure 'Internet' service tag, the CIDR/wildcard forms, and the
+# generic 'Any' value used by some non-Azure or hand-written templates.
 INTERNET_SOURCE_PREFIXES = {"*", "0.0.0.0/0", "internet", "any"}
 
 
