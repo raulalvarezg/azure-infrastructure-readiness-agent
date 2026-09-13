@@ -1,0 +1,26 @@
+# A SAP HANA HA deployment with several risks: no fencing agent, no shared
+# storage type, SCS not made highly available, and an undersized VM for the
+# HANA database tier.
+
+metadata:
+  name: sap-risky
+  environment: production
+  region: eastus2
+
+networking:
+  vnet: vnet-sap-risky
+
+resources:
+  - type: Microsoft.Compute/virtualMachines
+    name: sap-hana-01
+    sap_role: hana
+    properties:
+      size: Standard_D8s_v5
+      os_type: Linux
+      os_distro: sles_sap
+      availability_zone: 1
+      managed_disk_type: Premium_LRS
+
+sap:
+  enabled: true
+  hana_ha_enabled: true

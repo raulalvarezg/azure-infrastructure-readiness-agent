@@ -1,0 +1,74 @@
+# A well-formed, production-ready deployment with SAP HANA HA configured
+# according to Azure best practices. This file is expected to produce a
+# "READY" (or near-ready) assessment with no critical/high issues.
+
+metadata:
+  name: sap-prod-eastus
+  environment: production
+  region: eastus
+
+networking:
+  vnet: vnet-sap-prod
+  subnets:
+    - name: snet-app
+      address_prefix: 10.0.1.0/24
+    - name: snet-db
+      address_prefix: 10.0.2.0/24
+  network_security_groups:
+    - name: nsg-sap-prod
+      rules:
+        - name: allow-ssh-from-bastion
+          direction: Inbound
+          access: Allow
+          protocol: Tcp
+          destination_port_range: "22"
+          source_address_prefix: 10.0.100.0/24
+        - name: deny-all-inbound
+          direction: Inbound
+          access: Deny
+          protocol: "*"
+          destination_port_range: "*"
+          source_address_prefix: "*"
+
+resources:
+  - type: Microsoft.Compute/virtualMachines
+    name: sap-hana-01
+    sap_role: hana
+    properties:
+      size: Standard_M32ts
+      os_type: Linux
+      os_distro: sles_sap
+      availability_zone: 1
+      managed_disk_type: Premium_LRS
+  - type: Microsoft.Compute/virtualMachines
+    name: sap-hana-02
+    sap_role: hana
+    properties:
+      size: Standard_M32ts
+      os_type: Linux
+      os_distro: sles_sap
+      availability_zone: 2
+      managed_disk_type: Premium_LRS
+  - type: Microsoft.Compute/virtualMachines
+    name: sap-ascs-01
+    properties:
+      size: Standard_D4s_v5
+      os_type: Linux
+      os_distro: sles_sap
+      availability_zone: 1
+      managed_disk_type: Premium_LRS
+
+high_availability:
+  enabled: true
+  cluster_type: pacemaker
+  fencing_agent: sbd
+  number_of_nodes: 2
+  quorum_device: qdevice-sap-prod
+
+sap:
+  enabled: true
+  hana_ha_enabled: true
+  scs_ha_enabled: true
+  fencing_agent: sbd
+  shared_storage_type: ANF
+  backup_enabled: true
