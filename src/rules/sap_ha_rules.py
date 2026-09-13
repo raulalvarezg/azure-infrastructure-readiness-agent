@@ -20,6 +20,10 @@ SAP_HANA_VM_ESERIES_PATTERN = re.compile(r"^standard_e\d+(-\d+)?s_v\d+$")
 
 VALID_SHARED_STORAGE_TYPES = {"anf", "azure_netapp_files", "azure_files", "nfs"}
 
+# Accepted values for a resource's 'sap_role' field identifying it as the
+# SAP HANA database tier (used by SapVmSizingRule).
+HANA_ROLE_VALUES = {"hana", "hana_db", "database"}
+
 
 def _is_sap_hana_certified_size(size: str) -> bool:
     """Return True if ``size`` looks like a SAP HANA-certified memory-optimized VM size."""
@@ -145,7 +149,7 @@ class SapVmSizingRule(Rule):
                 continue
             if not resource.get("sap_role"):
                 continue
-            if str(resource.get("sap_role")).lower() not in ("hana", "hana_db", "database"):
+            if str(resource.get("sap_role")).lower() not in HANA_ROLE_VALUES:
                 continue
 
             properties = resource.get("properties") or {}

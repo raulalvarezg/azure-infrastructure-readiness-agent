@@ -79,7 +79,7 @@ class ClusterQuorumRule(Rule):
         node_count = ha.get("number_of_nodes")
         has_qdevice = bool(ha.get("quorum_device"))
 
-        if not isinstance(node_count, int):
+        if not isinstance(node_count, int) or isinstance(node_count, bool):
             return [
                 Issue(
                     rule_id=self.rule_id,

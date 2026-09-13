@@ -79,6 +79,12 @@ class ClusterQuorumRuleTests(unittest.TestCase):
         issues = rule.evaluate({"high_availability": {"enabled": True}})
         self.assertEqual(len(issues), 1)
 
+    def test_boolean_node_count_treated_as_invalid(self):
+        rule = ClusterQuorumRule()
+        issues = rule.evaluate({"high_availability": {"enabled": True, "number_of_nodes": True}})
+        self.assertEqual(len(issues), 1)
+        self.assertIn("does not specify", issues[0].message)
+
 
 class ClusterTypeRuleTests(unittest.TestCase):
     def test_missing_cluster_type_flagged(self):
