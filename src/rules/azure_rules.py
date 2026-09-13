@@ -45,6 +45,7 @@ KNOWN_AZURE_REGIONS = {
 
 SENSITIVE_PORTS = {"22", "3389"}
 COMPUTE_RESOURCE_TYPE = "microsoft.compute/virtualmachines"
+INTERNET_SOURCE_PREFIXES = {"*", "0.0.0.0/0", "internet", "any"}
 
 
 class MetadataCompletenessRule(Rule):
@@ -217,21 +218,20 @@ class ManagedDiskRule(Rule):
             properties = resource.get("properties") or {}
             name = resource.get("name", f"resource[{index}]")
             disk_type = properties.get("managed_disk_type")
-            if properties.get("use_unmanaged_disks") or disk_type in (None, "", "Unmanaged"):
-                if disk_type == "Unmanaged" or properties.get("use_unmanaged_disks"):
-                    issues.append(
-                        Issue(
-                            rule_id=self.rule_id,
-                            category=self.category,
-                            severity=Severity.MEDIUM,
-                            message=f"Virtual machine '{name}' uses unmanaged disks.",
-                            recommendation=(
-                                "Migrate to managed disks (e.g. 'Premium_LRS') for better "
-                                "reliability, scalability and simplified management."
-                            ),
-                            path=f"resources[{index}].properties.managed_disk_type",
-                        )
+            if disk_type == "Unmanaged" or properties.get("use_unmanaged_disks"):
+                issues.append(
+                    Issue(
+                        rule_id=self.rule_id,
+                        category=self.category,
+                        severity=Severity.MEDIUM,
+                        message=f"Virtual machine '{name}' uses unmanaged disks.",
+                        recommendation=(
+                            "Migrate to managed disks (e.g. 'Premium_LRS') for better "
+                            "reliability, scalability and simplified management."
+                        ),
+                        path=f"resources[{index}].properties.managed_disk_type",
                     )
+                )
         return issues
 
 
@@ -304,7 +304,7 @@ class OpenNetworkSecurityGroupRule(Rule):
         return (
             direction == "inbound"
             and access == "allow"
-            and source in ("*", "0.0.0.0/0", "internet", "any")
+            and source in INTERNET_SOURCE_PREFIXES
             and port in SENSITIVE_PORTS
         )
 
