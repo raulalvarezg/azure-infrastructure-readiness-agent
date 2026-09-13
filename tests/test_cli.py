@@ -37,6 +37,16 @@ class CliTests(unittest.TestCase):
             exit_code = main([sample_path("risky_linux_ha_deployment.yaml"), "--strict"])
         self.assertEqual(exit_code, 1)
 
+    def test_non_strict_mode_succeeds_on_warnings_only(self):
+        # risky_linux_ha_deployment.yaml has a critical issue, so use a
+        # deployment that only ever produces warnings to test the
+        # READY_WITH_WARNINGS non-strict exit code path via the API directly.
+        from src.models import ReadinessStatus
+        from src.cli.main import _STATUS_EXIT_CODES, _STRICT_STATUS_EXIT_CODES
+
+        self.assertEqual(_STATUS_EXIT_CODES[ReadinessStatus.READY_WITH_WARNINGS], 0)
+        self.assertEqual(_STRICT_STATUS_EXIT_CODES[ReadinessStatus.READY_WITH_WARNINGS], 1)
+
 
 if __name__ == "__main__":
     unittest.main()

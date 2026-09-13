@@ -8,11 +8,17 @@ import sys
 from typing import List, Optional
 
 from src.ai.assessment import assess_deployment_file
-from src.models import ReadinessAssessment, ReadinessStatus, Severity
+from src.models import ReadinessAssessment, ReadinessStatus
 
 _STATUS_EXIT_CODES = {
     ReadinessStatus.READY: 0,
     ReadinessStatus.READY_WITH_WARNINGS: 0,
+    ReadinessStatus.NOT_READY: 1,
+}
+
+_STRICT_STATUS_EXIT_CODES = {
+    ReadinessStatus.READY: 0,
+    ReadinessStatus.READY_WITH_WARNINGS: 1,
     ReadinessStatus.NOT_READY: 1,
 }
 
@@ -88,7 +94,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         print(render_text_report(assessment))
 
     if args.strict:
-        return 0 if assessment.status == ReadinessStatus.READY else 1
+        return _STRICT_STATUS_EXIT_CODES[assessment.status]
     return _STATUS_EXIT_CODES[assessment.status]
 
 

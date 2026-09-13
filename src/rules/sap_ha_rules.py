@@ -8,7 +8,7 @@ from src.models import Issue, Severity
 from src.rules.base import Rule, get_in
 
 # VM families certified/recommended for SAP HANA memory-intensive workloads.
-SAP_HANA_VM_FAMILIES = ("standard_m", "standard_e", "standard_s")
+SAP_HANA_VM_FAMILIES = ("standard_m", "standard_e")
 
 VALID_SHARED_STORAGE_TYPES = {"anf", "azure_netapp_files", "azure_files", "nfs"}
 

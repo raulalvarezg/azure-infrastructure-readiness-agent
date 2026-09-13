@@ -299,14 +299,32 @@ class OpenNetworkSecurityGroupRule(Rule):
         direction = str(rule.get("direction", "")).lower()
         access = str(rule.get("access", "")).lower()
         source = str(rule.get("source_address_prefix", "")).strip().lower()
-        port = str(rule.get("destination_port_range", ""))
+        port_range = str(rule.get("destination_port_range", ""))
 
         return (
             direction == "inbound"
             and access == "allow"
             and source in INTERNET_SOURCE_PREFIXES
-            and port in SENSITIVE_PORTS
+            and _port_range_includes_sensitive_port(port_range)
         )
+
+
+def _port_range_includes_sensitive_port(port_range: str) -> bool:
+    """Return True if ``port_range`` (a single port, range, or '*') covers a sensitive port."""
+
+    port_range = port_range.strip()
+    if port_range in ("*", ""):
+        return bool(port_range)
+
+    if "-" in port_range:
+        start_str, _, end_str = port_range.partition("-")
+        try:
+            start, end = int(start_str), int(end_str)
+        except ValueError:
+            return False
+        return any(start <= int(sensitive_port) <= end for sensitive_port in SENSITIVE_PORTS)
+
+    return port_range in SENSITIVE_PORTS
 
 
 def _virtual_machines(deployment: Dict[str, Any]) -> List[Dict[str, Any]]:

@@ -240,6 +240,74 @@ class OpenNetworkSecurityGroupRuleTests(unittest.TestCase):
         }
         self.assertEqual(rule.evaluate(deployment), [])
 
+    def test_wildcard_port_range_flagged(self):
+        rule = OpenNetworkSecurityGroupRule()
+        deployment = {
+            "networking": {
+                "network_security_groups": [
+                    {
+                        "name": "nsg1",
+                        "rules": [
+                            {
+                                "name": "allow-all",
+                                "direction": "Inbound",
+                                "access": "Allow",
+                                "destination_port_range": "*",
+                                "source_address_prefix": "*",
+                            }
+                        ],
+                    }
+                ]
+            }
+        }
+        issues = rule.evaluate(deployment)
+        self.assertEqual(len(issues), 1)
+
+    def test_port_range_covering_sensitive_port_flagged(self):
+        rule = OpenNetworkSecurityGroupRule()
+        deployment = {
+            "networking": {
+                "network_security_groups": [
+                    {
+                        "name": "nsg1",
+                        "rules": [
+                            {
+                                "name": "allow-range",
+                                "direction": "Inbound",
+                                "access": "Allow",
+                                "destination_port_range": "20-25",
+                                "source_address_prefix": "*",
+                            }
+                        ],
+                    }
+                ]
+            }
+        }
+        issues = rule.evaluate(deployment)
+        self.assertEqual(len(issues), 1)
+
+    def test_port_range_not_covering_sensitive_port_not_flagged(self):
+        rule = OpenNetworkSecurityGroupRule()
+        deployment = {
+            "networking": {
+                "network_security_groups": [
+                    {
+                        "name": "nsg1",
+                        "rules": [
+                            {
+                                "name": "allow-range",
+                                "direction": "Inbound",
+                                "access": "Allow",
+                                "destination_port_range": "80-443",
+                                "source_address_prefix": "*",
+                            }
+                        ],
+                    }
+                ]
+            }
+        }
+        self.assertEqual(rule.evaluate(deployment), [])
+
 
 class DefaultAzureRuleSetTests(unittest.TestCase):
     def test_risky_config_produces_expected_rule_hits(self):
