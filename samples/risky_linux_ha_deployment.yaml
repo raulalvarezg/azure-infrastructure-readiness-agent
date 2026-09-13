@@ -1,0 +1,33 @@
+# A Linux HA (Pacemaker) deployment with several risks: no fencing agent,
+# an even node count without a quorum device, and an unsupported distro.
+
+metadata:
+  name: linux-ha-cluster
+  environment: production
+  region: westeurope
+
+networking:
+  vnet: vnet-linux-ha
+
+resources:
+  - type: Microsoft.Compute/virtualMachines
+    name: ha-node-01
+    properties:
+      size: Standard_D4s_v5
+      os_type: Linux
+      os_distro: ubuntu
+      availability_zone: 1
+      managed_disk_type: Premium_LRS
+  - type: Microsoft.Compute/virtualMachines
+    name: ha-node-02
+    properties:
+      size: Standard_D4s_v5
+      os_type: Linux
+      os_distro: ubuntu
+      availability_zone: 2
+      managed_disk_type: Premium_LRS
+
+high_availability:
+  enabled: true
+  cluster_type: pacemaker
+  number_of_nodes: 2

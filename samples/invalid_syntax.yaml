@@ -1,0 +1,13 @@
+# A deployment file containing a deliberate YAML syntax error (unbalanced
+# quotes / bad indentation) to exercise the syntax validator.
+
+metadata:
+  name: "broken-deployment
+  environment: production
+  region: eastus
+
+resources:
+  - type: Microsoft.Compute/virtualMachines
+  name: vm1
+    properties:
+      size: Standard_D2s_v3

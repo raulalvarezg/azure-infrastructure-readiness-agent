@@ -1,0 +1,32 @@
+# A deployment with numerous Azure infrastructure configuration issues:
+# missing metadata, no VM size, open SSH to the internet, no availability
+# zone for production, unmanaged disks, and an unrecognized region.
+
+metadata:
+  name: risky-app
+  environment: production
+  region: mars-central
+
+resources:
+  - type: Microsoft.Compute/virtualMachines
+    name: web-vm-01
+    properties:
+      os_type: Linux
+      managed_disk_type: Unmanaged
+
+networking:
+  network_security_groups:
+    - name: nsg-open
+      rules:
+        - name: allow-ssh-any
+          direction: Inbound
+          access: Allow
+          protocol: Tcp
+          destination_port_range: "22"
+          source_address_prefix: "*"
+        - name: allow-rdp-any
+          direction: Inbound
+          access: Allow
+          protocol: Tcp
+          destination_port_range: "3389"
+          source_address_prefix: "0.0.0.0/0"
